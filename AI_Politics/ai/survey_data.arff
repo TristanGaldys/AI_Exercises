@@ -1,0 +1,42 @@
+@RELATION political_affiliation
+
+@ATTRIBUTE Q1 {A,B,C,D}
+@ATTRIBUTE Q2 {A,B,C,D}
+@ATTRIBUTE Q3 {A,B,C,D}
+@ATTRIBUTE Q4 {A,B,C,D}
+@ATTRIBUTE Q5 {A,B,C,D}
+@ATTRIBUTE Q6 {A,B,C,D}
+@ATTRIBUTE Q7 {A,B,C,D}
+@ATTRIBUTE Q8 {A,B,C,D}
+@ATTRIBUTE Q9 {A,B,C,D}
+@ATTRIBUTE Q10 {A,B,C,D}
+@ATTRIBUTE Q11 {A,B,C,D}
+@ATTRIBUTE Q12 {A,B,C,D}
+@ATTRIBUTE Q13 {A,B,C,D}
+@ATTRIBUTE Q14 {A,B,C,D}
+@ATTRIBUTE Q15 {A,B,C,D}
+@ATTRIBUTE affiliation {Socialist,Libertarian,Conservative,Liberal,Other}
+
+@DATA
+C,A,A,A,C,A,B,A,B,D,A,B,B,B,A,Libertarian
+A,D,B,D,C,A,C,A,B,B,D,D,A,A,B,Conservative
+D,D,B,C,B,C,A,D,A,A,C,C,D,B,D,Other
+C,A,A,D,C,D,C,A,B,C,D,A,C,A,A,Libertarian
+D,C,B,A,D,C,A,A,C,A,A,A,D,B,A,Conservative
+B,D,C,C,B,C,A,A,A,B,A,C,D,D,D,Liberal
+D,C,B,D,A,D,B,D,A,D,A,C,A,C,B,Conservative
+A,B,A,A,D,D,A,A,C,D,D,C,C,B,B,Libertarian
+C,C,D,A,B,C,A,D,C,A,B,C,D,B,C,Other
+D,C,B,A,D,A,B,D,C,D,A,A,D,A,A,Conservative
+B,D,D,B,A,C,A,D,B,A,A,D,A,A,A,Liberal
+C,D,A,A,D,A,C,D,B,D,B,D,D,B,A,Libertarian
+B,B,C,B,B,D,A,C,C,B,A,C,D,A,D,Liberal
+D,C,B,A,D,B,D,A,C,C,A,D,D,B,C,Conservative
+D,D,C,C,A,D,A,D,B,A,D,B,D,A,B,Other
+B,C,C,B,B,D,A,A,C,A,A,C,D,A,A,Liberal
+D,D,C,C,B,C,A,D,A,C,B,C,D,A,D,Other
+A,C,B,B,D,D,B,B,A,D,A,D,C,B,D,Conservative
+A,A,A,A,C,B,C,A,B,D,A,D,B,B,A,Libertarian
+A,A,A,D,D,B,B,B,D,D,D,A,A,B,C,Conservative
+B,B,B,C,B,C,D,D,C,B,A,C,D,C,D,Liberal
+A,C,A,A,A,C,B,A,C,D,D,D,A,B,C,Conservative

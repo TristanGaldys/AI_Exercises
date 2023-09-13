@@ -1,0 +1,15 @@
+@RELATION political_affiliation
+
+@ATTRIBUTE Q1 {A,B,C,D}
+@ATTRIBUTE Q2 {A,B,C,D}
+@ATTRIBUTE Q3 {A,B,C,D}
+@ATTRIBUTE Q4 {A,B,C,D}
+@ATTRIBUTE Q5 {A,B,C,D}
+@ATTRIBUTE Q6 {A,B,C,D}
+@ATTRIBUTE Q7 {A,B,C,D}
+@ATTRIBUTE Q8 {A,B,C,D}
+@ATTRIBUTE Q9 {A,B,C,D}
+@ATTRIBUTE affiliation {Socialist,Libertarian,Conservative,Liberal,Other}
+
+@DATA
+C,B,D,A,B,C,D,A,C,Conservative
