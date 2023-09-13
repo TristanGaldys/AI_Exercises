@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
-
 import weka.classifiers.trees.J48;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -16,6 +15,7 @@ import weka.core.SerializationHelper;
 
 public class Main {
 
+    // Inner class representing a survey question with its text and options
     private static class Question {
         String questionText;
         String[] options;
@@ -26,7 +26,9 @@ public class Main {
         }
     }
 
-    private static JPanel panel; // Declare the panel at the class level
+
+    // GUI components and data structures to hold the survey questions and answers
+    private static JPanel panel;
     private static JLabel questionLabel;
     private static ButtonGroup optionGroup;
     private static JButton nextButton;
@@ -34,7 +36,10 @@ public class Main {
     private static J48 tree;
     private static Instances data;
 
-
+    /**
+     * The entry point of the application.
+     * It initializes the Weka data structures and sets up the GUI.
+     */
     public static void main(String[] args) {
         try {
             // Load the ARFF file
@@ -77,13 +82,17 @@ public class Main {
         });
     }
 
+
+    // List to hold the survey questions and answers
     private static List<Question> questions = new ArrayList<>();
     private static int currentQuestionIndex = -1;
     private static List<String> selectedAnswers = new ArrayList<>();
 
-    private static void startSurvey() {
-        // Add all the questions here
 
+    /**
+     * Initializes the survey by creating a list of questions and starting the survey.
+     */
+    private static void startSurvey() {
         String question3 = "What is your view on education policy?";
         String[] options3 = {
             "A. Education policy should prioritize traditional values and national history",
@@ -229,82 +238,89 @@ public class Main {
         };
         questions.add(new Question(question16, options16));
 
-    
         // Start the survey by displaying the first question
         showNextQuestion();
     }
 
-    private static JLabel predictionLabel = new JLabel();  // Declare it as a class variable
+    // Label to display the predicted political affiliation
+    private static JLabel predictionLabel = new JLabel();
 
-private static void showNextQuestion() {
-    currentQuestionIndex++;
-    if (currentQuestionIndex < questions.size()) {
-        // Remove previous contents of the main panel
-        panel.removeAll();
+    /**
+     * Displays the next question in the survey and updates the prediction based on the answers so far.
+     */
+    private static void showNextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.size()) {
+            // Remove previous contents of the main panel
+            panel.removeAll();
 
-        // Create a panel for questions and options
-        JPanel questionPanel = new JPanel();
-        questionPanel.setLayout(new BoxLayout(questionPanel, BoxLayout.Y_AXIS));
+            // Create a panel for questions and options
+            JPanel questionPanel = new JPanel();
+            questionPanel.setLayout(new BoxLayout(questionPanel, BoxLayout.Y_AXIS));
 
-        // Add empty space (vertical padding) at the top of the question panel
-        questionPanel.add(Box.createVerticalStrut(20));
-
-        // Display the next question with its number
-        clearQuestion();
-        Question question = questions.get(currentQuestionIndex);
-        String questionTextWithNumber = "Question " + (currentQuestionIndex + 1) + ": " + question.questionText;
-        questionLabel.setText(questionTextWithNumber);
-        questionPanel.add(questionLabel);
-        for (String option : question.options) {
-            JRadioButton radioButton = new JRadioButton(option);
-            if (currentQuestionIndex == questions.size() - 1) {
-                radioButton.setActionCommand(option.substring(3));
-            } else {
-                radioButton.setActionCommand(String.valueOf(option.charAt(0)));
-            }
-            optionGroup.add(radioButton);
-            questionPanel.add(radioButton);
-        }
-
-        // Add a label to display the prediction
-        if (currentQuestionIndex > 0) {
-            try {
-                Instance newInstance = new DenseInstance(data.numAttributes());
-                newInstance.setDataset(data);
-
-                for (int i = 0; i < currentQuestionIndex; i++) {
-                    newInstance.setValue(i, selectedAnswers.get(i));
-                }
-
-                for (int i = currentQuestionIndex; i < data.numAttributes() - 1; i++) {
-                    newInstance.setMissing(i);
-                }
-
-                double classIndex = tree.classifyInstance(newInstance);
-                String classValue = data.classAttribute().value((int) classIndex);
-                predictionLabel.setText("Predicted political affiliation based on answers so far: " + classValue);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            // Add empty space (vertical padding) at the top of the question panel
             questionPanel.add(Box.createVerticalStrut(20));
-            questionPanel.add(predictionLabel);
+
+            // Display the next question with its number
+            clearQuestion();
+            Question question = questions.get(currentQuestionIndex);
+            String questionTextWithNumber = "Question " + (currentQuestionIndex + 1) + ": " + question.questionText;
+            questionLabel.setText(questionTextWithNumber);
+            questionPanel.add(questionLabel);
+            for (String option : question.options) {
+                JRadioButton radioButton = new JRadioButton(option);
+                if (currentQuestionIndex == questions.size() - 1) {
+                    radioButton.setActionCommand(option.substring(3));
+                } else {
+                    radioButton.setActionCommand(String.valueOf(option.charAt(0)));
+                }
+                optionGroup.add(radioButton);
+                questionPanel.add(radioButton);
+            }
+
+            // Add a label to display the prediction
+            if (currentQuestionIndex > 0) {
+                try {
+                    Instance newInstance = new DenseInstance(data.numAttributes());
+                    newInstance.setDataset(data);
+
+                    for (int i = 0; i < currentQuestionIndex; i++) {
+                        newInstance.setValue(i, selectedAnswers.get(i));
+                    }
+
+                    for (int i = currentQuestionIndex; i < data.numAttributes() - 1; i++) {
+                        newInstance.setMissing(i);
+                    }
+
+                    double classIndex = tree.classifyInstance(newInstance);
+                    String classValue = data.classAttribute().value((int) classIndex);
+                    predictionLabel.setText("Predicted political affiliation based on answers so far: " + classValue);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                questionPanel.add(Box.createVerticalStrut(20));
+                questionPanel.add(predictionLabel);
+            }
+
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+            panel.add(Box.createVerticalGlue());
+            panel.add(questionPanel);
+            panel.add(createButtonsPanel());
+            panel.add(Box.createVerticalGlue());
+
+            panel.revalidate();
+            panel.repaint();
+            prevButton.setEnabled(currentQuestionIndex > 0);
+        } else {
+            handleSurveyCompletion();
         }
-
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(Box.createVerticalGlue());
-        panel.add(questionPanel);
-        panel.add(createButtonsPanel());
-        panel.add(Box.createVerticalGlue());
-
-        panel.revalidate();
-        panel.repaint();
-        prevButton.setEnabled(currentQuestionIndex > 0);
-    } else {
-        handleSurveyCompletion();
     }
-}
 
-    
+    /**
+     * Creates a panel containing the Next and Previous buttons.
+     *
+     * @return the panel containing the buttons
+     */
     private static JPanel createButtonsPanel() {
         // Create a panel for buttons
         JPanel buttonsPanel = new JPanel();
@@ -313,8 +329,10 @@ private static void showNextQuestion() {
         return buttonsPanel;
     }
 
+    /**
+     * Clears the previous question from the GUI.
+     */
     private static void clearQuestion() {
-        // Clear the components related to the previous question
         questionLabel.setText("");
         optionGroup.clearSelection();
         for (Component component : panel.getComponents()) {
@@ -324,6 +342,9 @@ private static void showNextQuestion() {
         }
     }
 
+    /**
+     * Handles the Next button click event by saving the selected answer and displaying the next question.
+     */
     private static void handleNextButton() {
         ButtonModel selectedOption = optionGroup.getSelection();
         if (selectedOption == null) {
@@ -335,6 +356,9 @@ private static void showNextQuestion() {
         }
     }
 
+    /**
+     * Handles the Previous button click event by going back to the previous question.
+     */
     private static void handlePrevButton() {
         // Show the previous question
         currentQuestionIndex -= 2;
@@ -343,95 +367,102 @@ private static void showNextQuestion() {
         }
     }
 
-private static void handleSurveyCompletion() {
-    // Save the survey data to a CSV file
-    System.out.println(selectedAnswers);
-    saveSurveyDataToFile();
-    
-    try {
-        // Load the ARFF file
-        DataSource source = new DataSource("survey_data.arff");
-        Instances data = source.getDataSet();
+    /**
+     * Handles the completion of the survey by saving the data to a file and making a final prediction.
+     */
+    private static void handleSurveyCompletion() {
+        // Save the survey data to a CSV file
+        System.out.println(selectedAnswers);
+        saveSurveyDataToFile();
         
-        // Set the index of the class attribute (the attribute we want to predict)
-        data.setClassIndex(data.numAttributes() - 1);
-        
-        // Load the trained model
-        J48 tree = (J48) SerializationHelper.read("j48model.model");
-        
-        // Create a new instance for prediction
-        Instance newInstance = new DenseInstance(data.numAttributes());
-        for (int i = 0; i < selectedAnswers.size() - 1; i++) {
-            newInstance.setValue(i, selectedAnswers.get(i).charAt(0));
-        }
-        newInstance.setDataset(data);
-        
-        // Make the prediction
-        double classIndex = tree.classifyInstance(newInstance);
-        String classValue = data.classAttribute().value((int) classIndex);
-        JOptionPane.showMessageDialog(null, "Predicted political affiliation: " + classValue);
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    
-    JOptionPane.showMessageDialog(null, "Survey completed. Thank you for your responses.");
-    System.exit(0);
-}
-
-private static void saveSurveyDataToFile() {
-    File file = new File("survey_data.arff");
-    FileWriter fileWriter = null;
-    PrintWriter printWriter = null;
-    
-    try {
-        // Check if the file exists; if not, create a new file and write the header
-        if (!file.exists()) {
-            file.createNewFile();
-            fileWriter = new FileWriter(file, true);
-            printWriter = new PrintWriter(fileWriter);
-            
-            // Write ARFF header
-            printWriter.println("@RELATION political_affiliation");
-            printWriter.println();
-            for (int i = 1; i <= questions.size()-1; i++) {
-                printWriter.println("@ATTRIBUTE Q" + i + " {A,B,C,D}");
-            }            
-            printWriter.println("@ATTRIBUTE affiliation {Socialist,Libertarian,Conservative,Liberal,Other}");
-            printWriter.println();
-            printWriter.println("@DATA");
-        } else {
-            fileWriter = new FileWriter(file, true);
-            printWriter = new PrintWriter(fileWriter);
-        }
-        
-        // Write the survey data to the file
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < selectedAnswers.size(); i++) {
-            String answer = selectedAnswers.get(i);
-            if (i < selectedAnswers.size() - 1) {
-                // For all questions except the last, get the option letter (A, B, C, or D) and append it to the StringBuilder
-                sb.append(answer.charAt(0)).append(",");
-            } else {
-                // For the last question, append the full political affiliation name
-                sb.append(answer);
-            }
-        }
-        printWriter.println(sb.toString());
-        
-    } catch (IOException e) {
-        e.printStackTrace();
-    } finally {
         try {
-            if (printWriter != null) {
-                printWriter.close();
+            // Load the ARFF file
+            DataSource source = new DataSource("survey_data.arff");
+            Instances data = source.getDataSet();
+            
+            // Set the index of the class attribute (the attribute we want to predict)
+            data.setClassIndex(data.numAttributes() - 1);
+            
+            // Load the trained model
+            J48 tree = (J48) SerializationHelper.read("j48model.model");
+            
+            // Create a new instance for prediction
+            Instance newInstance = new DenseInstance(data.numAttributes());
+            for (int i = 0; i < selectedAnswers.size() - 1; i++) {
+                newInstance.setValue(i, selectedAnswers.get(i).charAt(0));
             }
-            if (fileWriter != null) {
-                fileWriter.close();
-            }
-        } catch (IOException e) {
+            newInstance.setDataset(data);
+            
+            // Make the prediction
+            double classIndex = tree.classifyInstance(newInstance);
+            String classValue = data.classAttribute().value((int) classIndex);
+            JOptionPane.showMessageDialog(null, "Predicted political affiliation: " + classValue);
+        } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        JOptionPane.showMessageDialog(null, "Survey completed. Thank you for your responses.");
+        System.exit(0);
     }
-}
+
+
+    /**
+     * Saves the survey data to an ARFF file.
+     */
+    private static void saveSurveyDataToFile() {
+        File file = new File("survey_data.arff");
+        FileWriter fileWriter = null;
+        PrintWriter printWriter = null;
+        
+        try {
+            // Check if the file exists; if not, create a new file and write the header
+            if (!file.exists()) {
+                file.createNewFile();
+                fileWriter = new FileWriter(file, true);
+                printWriter = new PrintWriter(fileWriter);
+                
+                // Write ARFF header
+                printWriter.println("@RELATION political_affiliation");
+                printWriter.println();
+                for (int i = 1; i <= questions.size()-1; i++) {
+                    printWriter.println("@ATTRIBUTE Q" + i + " {A,B,C,D}");
+                }            
+                printWriter.println("@ATTRIBUTE affiliation {Socialist,Libertarian,Conservative,Liberal,Other}");
+                printWriter.println();
+                printWriter.println("@DATA");
+            } else {
+                fileWriter = new FileWriter(file, true);
+                printWriter = new PrintWriter(fileWriter);
+            }
+            
+            // Write the survey data to the file
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < selectedAnswers.size(); i++) {
+                String answer = selectedAnswers.get(i);
+                if (i < selectedAnswers.size() - 1) {
+                    // For all questions except the last, get the option letter (A, B, C, or D) and append it to the StringBuilder
+                    sb.append(answer.charAt(0)).append(",");
+                } else {
+                    // For the last question, append the full political affiliation name
+                    sb.append(answer);
+                }
+            }
+            printWriter.println(sb.toString());
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (printWriter != null) {
+                    printWriter.close();
+                }
+                if (fileWriter != null) {
+                    fileWriter.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }
